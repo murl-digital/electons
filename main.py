@@ -21,6 +21,7 @@ input_data = np.loadtxt(input_filename, dtype='float32', delimiter=",", skiprows
 print('input_data:', input_data.shape)
 for i in range(0, input_data.shape[0]):
     if (input_data[i, 7] == -1): input_data[i,7] = 0
+    if (input_data[i, 15] == -1): input_data[i, 15] = 0
 # PRINT SOME OF THE INPUT DATA EXAMPLES
 print('E1,\tpx1,\t\tpy1,\tpz1,\tpt1,\teta1,\tphi1,\tQ1,\tE2,\tpx2,\tpy2,\tpz2,\tpt2,\teta2,\tphi2,\tQ2,\tM')
 for i in range(0, 19):
@@ -59,14 +60,14 @@ print()
 # columns=the 7 Features), and the Ground Truth into a matching 1-D array.
 # :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 # SEPARATE-OUT THE FEATURES AND THE GROUND TRUTH
-nFeatures = 7
+nFeatures = 16
 ground_truth_col = 7
 # for the training data
-train_X = train_data[:,0:7]   # The 7 features are in csv columns 2-8 [1:7]
+train_X = np.append(train_data[:,0:7], train_data[:, 8:], axis=1)   # The 7 features are in csv columns 2-8 [1:7]
 train_truth = train_data[:,ground_truth_col]   # The 'survived' flag is in csv column 9 [8]
 print('train_truth shape[0]', train_truth.shape[0])
 # for the test data
-test_X = test_data[:,0:7]   # The 7 features are in csv columns 2-8 [1:7]
+test_X = np.append(test_data[:,0:7], test_data[:, 8:], axis=1)   # The 7 features are in csv columns 2-8 [1:7]
 test_truth = test_data[:,ground_truth_col]   # The 'survived' flag is in column 9 [8]
 print('train_X', train_X.shape)
 print('train_truth', train_truth.shape)
