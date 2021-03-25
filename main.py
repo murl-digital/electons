@@ -47,7 +47,7 @@ for i in range(0, 19):
 # SPLIT THE INPUT DATA INTO A TRAINING DATASET AND A TESTING DATASET
 training_split = 0.80
 seed = 42
-train_data, test_data = train_test_split(input_data[0:200], train_size=training_split, random_state=seed)
+train_data, test_data = train_test_split(input_data[0:2000], train_size=training_split, random_state=seed)
 print('train_data:', train_data.shape)
 print('test_data:', test_data.shape)
 print()
@@ -163,7 +163,7 @@ model.compile(loss="binary_crossentropy",optimizer='adam',metrics=["accuracy"])
 # Examples to their Ground Truth values are also stored in the 'history' object for plotting.
 # :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 # FIND BEST VALUES FOR THE 120 WEIGHTS
-history = model.fit(train_X_scaled, train_truth, batch_size=1, epochs=1, validation_data=(test_X_scaled, test_truth))
+history = model.fit(train_X_scaled, train_truth, batch_size=1, epochs=10, validation_data=(test_X_scaled, test_truth))
 
 
 
@@ -234,10 +234,10 @@ print()
 print()
 print('Confusion Matrix for Charge on Test Examples')
 print()
-print('     Charge Correctly Predicted:   ', n_true_negatives, '  ',
-    n_false_negatives, ' :Charge Incorrectly Predicted')
-print('     Charge Incorrectly Predicted:  ', n_false_positives, '  ',
-    n_true_positives, ' :Charge Correctly Predicted')
+print('     Negative Correctly Predicted:   ', n_true_negatives, '  ',
+    n_false_negatives, ' :Negative Incorrectly Predicted')
+print('     Positive Incorrectly Predicted:  ', n_false_positives, '  ',
+    n_true_positives, ' :Positive Correctly Predicted')
 print()
 
 
