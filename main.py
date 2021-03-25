@@ -2,6 +2,7 @@
 # This program uses Keras and TensorFlow to implement a binary-classification DNN having 7 Features and 120
 # weights. It also demonstrates how to input data from a csv file.
 # Author: R. Bourquard - Dec 2020
+# Modified by: D. Layton - Mar 2021
 ################################################################################################################
 
 from __future__ import absolute_import, division, print_function, unicode_literals
@@ -52,15 +53,7 @@ print('train_data:', train_data.shape)
 print('test_data:', test_data.shape)
 print()
 
-# :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-# DISCUSSION #3:  Split-off the Features and the Ground Truth from the Training and Testing datafiles
-# -----------------------------------------------------------------------------------------------------------------
-# There are 8 features, in csv columns 1:8 [python columns 0:7].  However, column 1 [0] is the Passenger ID, which
-# is (by my intuition) of no value to deciding who survived, so it is skipped.  Column 9 [8] is the 'survived'
-# flag, which is our Ground Truth.  This code simply splits the Examples into a 2-D Feature matrix (rows=Examples,
-# columns=the 7 Features), and the Ground Truth into a matching 1-D array.
-# :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-# SEPARATE-OUT THE FEATURES AND THE GROUND TRUTH
+# TRAIN/TRUTH VALUES SPLIT
 nFeatures = 16
 ground_truth_col = 7
 # for the training data
@@ -78,24 +71,7 @@ print()
 
 
 
-# :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-# DISCUSSION #4:  Scale the values in the datasets
-# -----------------------------------------------------------------------------------------------------------------
-# As with the Brodie Weights model, there is a great difference in magnitude between the values of the various
-# Features.  As before, a typical way to solve this is to individually scale the input Features, so they are all
-# normalized (centered on zero with a standard deviation of 1).  (This means that after scaling they will mostly
-# be between -1 and +1.)  The following code does this.  Each Feature column is scaled individually across
-# all the Training Example rows.
-#
-# Note that we compute a scaling object (scaler_obj), which contains the derived scale factors.  It is calculated
-# from just the Training Features.  Once we have it, it is applied to both the Training Features and the Test
-# Features, since they both must be scaled identically.
-#
-# (Typically, after this is done, the scaling object is output and saved in a file for later use, since it must be
-# applied to the Features of every subsequent input to the model.  In this program, we don't save the scaling
-# object because there are no additional Examples to be run in some later program.)
-# :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-# SCALE EACH FEATURE TO BE CENTERED ON ZERO, WITH A STANDARD DEVIATION OF 1
+# NORMALIZE COLUMN DATA
 scaler_obj = preprocessing.StandardScaler().fit(train_X)   # scaler_obj will scale each Feature (column) independently
 train_X_scaled = scaler_obj.transform(train_X)  # scale each Training Feature (column)
 test_X_scaled = scaler_obj.transform(test_X)  # scale each Test Feature (column)
@@ -139,8 +115,10 @@ print('test_truth', test_truth.shape)
 # BUILD THE TENSORFLOW MODEL
 model = keras.models.Sequential()
 model.add(keras.layers.InputLayer(input_shape=[nFeatures,]))
-model.add(keras.layers.Dense(nFeatures, activation='relu'))
-model.add(keras.layers.Dense(nFeatures, activation='relu'))
+model.add(keras.layers.Dense(nFeatures + 1, activation='relu'))
+model.add(keras.layers.Dense(nFeatures + 2, activation='relu'))
+model.add(keras.layers.Dense(nFeatures + 2, activation='relu'))
+model.add(keras.layers.Dense(nFeatures + 1, activation='relu'))
 model.add(keras.layers.Dense(1, activation='sigmoid'))
 model.summary()
 model.compile(loss="binary_crossentropy",optimizer='adam',metrics=["accuracy"])
@@ -163,7 +141,7 @@ model.compile(loss="binary_crossentropy",optimizer='adam',metrics=["accuracy"])
 # Examples to their Ground Truth values are also stored in the 'history' object for plotting.
 # :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 # FIND BEST VALUES FOR THE 120 WEIGHTS
-history = model.fit(train_X_scaled, train_truth, batch_size=1, epochs=10, validation_data=(test_X_scaled, test_truth))
+history = model.fit(train_X_scaled, train_truth, batch_size=1, epochs=20, validation_data=(test_X_scaled, test_truth))
 
 
 
