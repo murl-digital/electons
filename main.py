@@ -23,30 +23,31 @@ for i in range(0, input_data.shape[0]):
     if (input_data[i, 7] == -1): input_data[i,7] = 0
     if (input_data[i, 15] == -1): input_data[i, 15] = 0
 # PRINT SOME OF THE INPUT DATA EXAMPLES
-print('E1,\tpx1,\t\tpy1,\tpz1,\tpt1,\teta1,\tphi1,\tQ1,\tE2,\tpx2,\tpy2,\tpz2,\tpt2,\teta2,\tphi2,\tQ2,\tM')
+print('E1,\tpx1,\tpy1,\tpz1,\tpt1,\teta1,\tphi1,\tQ1,\tE2,\tpx2,\tpy2,\tpz2,\tpt2,\teta2,\tphi2,\tQ2,\tM')
 for i in range(0, 19):
-    print('{}\t'.format(input_data[i,0]),
-        '{}\t'.format(input_data[i,1]),
-        '{}\t'.format(input_data[i,2]),
-        '{}\t'.format(input_data[i,3]),
-        '{}\t'.format(input_data[i, 4]),
-        '{}\t'.format(input_data[i, 5]),
-        '{}\t'.format(input_data[i, 6]),
-        '{}\t'.format(input_data[i, 7]),
-        '{}\t'.format(input_data[i, 8]),
-        '{}\t'.format(input_data[i, 9]),
-        '{}\t'.format(input_data[i, 10]),
-        '{}\t'.format(input_data[i, 11]),
-        '{}\t'.format(input_data[i, 12]),
-        '{}\t'.format(input_data[i, 13]),
-        '{}\t'.format(input_data[i, 14]),
-        '{}\t'.format(input_data[i, 15]),
-        '{}\t'.format(input_data[i, 16]),
+    print(round(input_data[i, 0], 2), "\t",
+        round(input_data[i, 1], 2), "\t",
+        round(input_data[i, 2], 2), "\t",
+        round(input_data[i, 3], 2), "\t",
+        round(input_data[i, 4], 2), "\t",
+        round(input_data[i, 5], 2), "\t",
+        round(input_data[i, 6], 2), "\t",
+        round(input_data[i, 7], 2), "\t",
+        round(input_data[i, 8], 2), "\t",
+        round(input_data[i, 9], 2), "\t",
+        round(input_data[i, 10], 2), "\t",
+        round(input_data[i, 11], 2), "\t",
+        round(input_data[i, 12], 2), "\t",
+        round(input_data[i, 13], 2), "\t",
+        round(input_data[i, 14], 2), "\t",
+        round(input_data[i, 15], 2), "\t",
+        round(input_data[i, 16], 2), "\t",
+        sep=''
     )
 # SPLIT THE INPUT DATA INTO A TRAINING DATASET AND A TESTING DATASET
 training_split = 0.80
 seed = 42
-train_data, test_data = train_test_split(input_data, train_size=training_split, random_state=seed)
+train_data, test_data = train_test_split(input_data[0:200], train_size=training_split, random_state=seed)
 print('train_data:', train_data.shape)
 print('test_data:', test_data.shape)
 print()
@@ -162,7 +163,7 @@ model.compile(loss="binary_crossentropy",optimizer='adam',metrics=["accuracy"])
 # Examples to their Ground Truth values are also stored in the 'history' object for plotting.
 # :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 # FIND BEST VALUES FOR THE 120 WEIGHTS
-history = model.fit(train_X_scaled, train_truth, batch_size=1, epochs=10, validation_data=(test_X_scaled, test_truth))
+history = model.fit(train_X_scaled, train_truth, batch_size=1, epochs=1, validation_data=(test_X_scaled, test_truth))
 
 
 
@@ -225,18 +226,18 @@ plt.show()
 probabilities = model.predict(test_X_scaled)   # the probability that the passengers survived
 # convert the probabilities to predictions (0 or 1) for comparison with the ground truth
 min_for_true = 0.5   # if the probability is >= 0.5, then assume the passenger survived
-vector_int = np.vectorize(np.int)
+vector_int = np.vectorize(np.int32)
 predictions = vector_int(probabilities + min_for_true)    # The int truncates any fractional part of the sum
 ((n_true_negatives, n_false_negatives), (n_false_positives, n_true_positives)) \
     = confusion_matrix(test_truth, predictions)
 print()
 print()
-print('Confusion Matrix for Survival on Test Examples (counts of passengers)')
+print('Confusion Matrix for Charge on Test Examples')
 print()
-print('     Perished Correctly Predicted:   ', n_true_negatives, '  ',
-    n_false_negatives, ' :Perished Incorrectly Predicted')
-print('     Survival Incorrectly Predicted:  ', n_false_positives, '  ',
-    n_true_positives, ' :Survival Correctly Predicted')
+print('     Charge Correctly Predicted:   ', n_true_negatives, '  ',
+    n_false_negatives, ' :Charge Incorrectly Predicted')
+print('     Charge Incorrectly Predicted:  ', n_false_positives, '  ',
+    n_true_positives, ' :Charge Correctly Predicted')
 print()
 
 
@@ -257,16 +258,25 @@ print()
 # PRINT SOME OF THE INPUT DATA EXAMPLES
 print()
 print()
-print('Some Passenger Data, with Predictions and Actual Outcomes...')
-print(' Age    Fare    Sex     SibSp     ParCh     Class   Embark   [Pred]Survived    [Actual]Survived')
-for i in range(0, 20):
-    print('{:4.0f}'.format(test_X[i,0]), '  ',
-        '${:3.0f}'.format(test_X[i,1]), ' ',
-        '{:3.0f}'.format(test_X[i,2]), '    ',
-        '{:3.0f}'.format(test_X[i, 3]), '     ',
-        '{:3.0f}'.format(test_X[i, 4]), '     ',
-        '{:3.0f}'.format(test_X[i, 5]), '    ',
-        '{:3.0f}'.format(test_X[i, 6]), '      ',
-        '{}'.format(predictions[i]==1), '         ',
-        '{}'.format(test_truth[i]==1)
+print('E1,\tpx1,\t\tpy1,\tpz1,\tpt1,\teta1,\tphi1,\tQ1,\tE2,\tpx2,\tpy2,\tpz2,\tpt2,\teta2,\tphi2,\tQ2,\tM')
+for i in range(0, 19):
+    print(round(test_X[i, 0], 2), "\t",
+        round(test_X[i, 1], 2), "\t",
+        round(test_X[i, 2], 2), "\t",
+        round(test_X[i, 3], 2), "\t",
+        round(test_X[i, 4], 2), "\t",
+        round(test_X[i, 5], 2), "\t",
+        round(test_X[i, 6], 2), "\t",
+        round(test_X[i, 7], 2), "\t",
+        round(test_X[i, 8], 2), "\t",
+        round(test_X[i, 9], 2), "\t",
+        round(test_X[i, 10], 2), "\t",
+        round(test_X[i, 11], 2), "\t",
+        round(test_X[i, 12], 2), "\t",
+        round(test_X[i, 13], 2), "\t",
+        round(test_X[i, 14], 2), "\t",
+        round(test_X[i, 15], 2), "\t",
+        predictions[i]==1, "\t",
+        test_truth[i]==1, "\t",
+        sep=''
     )
